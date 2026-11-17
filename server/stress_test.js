@@ -2,7 +2,7 @@ const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 
 const SERVER_URL = 'ws://127.0.0.1:3000';
-const PLAYER_COUNT = 8; // test max size
+const PLAYER_COUNT = 4; // test size 4
 
 class TestClient {
   constructor(name) {

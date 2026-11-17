@@ -65,12 +65,19 @@ wss.on('connection', (ws) => {
         // payload: {roomId}
         const room = rooms[payload.roomId];
         if (room && room.players.length >= 4 && room.status === 'waiting') {
-          const game = new Game(roomId, room.players);
+          const game = new Game(payload.roomId, room.players);
           room.game = game;
           room.status = 'started';
           // Notify each player with their hand
+          // Notify each player with their hand
           room.players.forEach(p => {
             send(p.ws, 'gameStart', { gameId: roomId, playerId: p.playerId, hand: game.getHand(p.playerId) });
+          });
+          // Send initial game state so clients know whose turn it is
+          const initStateMsg = { type: 'gameUpdate', payload: game.getPublicState() };
+          const initStateStr = JSON.stringify(initStateMsg);
+          room.players.forEach(p => {
+            if (p.ws.readyState === WebSocket.OPEN) p.ws.send(initStateStr);
           });
           broadcastRoomList();
         }
